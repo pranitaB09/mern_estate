@@ -17,7 +17,8 @@ const userSchema = new  mongoose.Schema({
     },
     avatar: {
         type: String,
-        default: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+        default: "https://www.w3schools.com/howto/img_avatar.png"
+        // default: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
         //another link:"https://www.w3schools.com/howto/img_avatar.png"
     },
 },  

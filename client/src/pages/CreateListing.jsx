@@ -10,7 +10,7 @@ export default function CreateListing() {
     const navigate = useNavigate()
     const [files,setFiles] = useState([]);
     const [formData,setFormData] = useState({
-        imagesUrls: [],
+        imageUrls: [],
         name: '',
         description: '',
         address: '',
@@ -29,7 +29,7 @@ export default function CreateListing() {
     const [loading, setLoading] = useState(false);
     console.log(formData);
     const handleImageSubmit = (e) => {
-        if (files.length > 0  && files.length + formData.imagesUrls.length < 7 ){
+        if (files.length > 0  && files.length + formData.imageUrls.length < 7 ){
             setUploading(true);
             setImageUploadError(false);
             const promises = [];
@@ -38,13 +38,15 @@ export default function CreateListing() {
                 promises.push(storeImage(files[i])); 
             }
             Promise.all(promises).then((urls) => {
-                setFormData({...formData, imagesUrls: imagesUrls.concat(urls),
+                setFormData({
+                    ...formData, 
+                    imageUrls: formData.imageUrls.concat(urls),
                 });
                  setImageUploadError(false);
                  setUploading(false);
             })
             .catch((err) => {
-                setImageUploadError('Image upload failed (2 mb max par image)');
+                setImageUploadError('Image upload failed (2 mb max per image)');
                 setUploading(false);
             });
         }else{
@@ -60,7 +62,7 @@ export default function CreateListing() {
             const storageRef = ref(storage, fileName);
             const uploadTask = uploadBytesResumable(storageRef, file);
             uploadTask.on(
-                "start_changed",
+                "state_changed",
                 (snapshot) => {
                     const progress = 
                         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -82,7 +84,7 @@ export default function CreateListing() {
     const handleRemoveImage = (index) => {
         setFormData({
             ...formData,
-            imagesUrls: formData.imagesUrls.filter((_, i) => i !== index),
+            imageUrls: formData.imageUrls.filter((_, i) => i !== index),
         });
     }
 
@@ -112,7 +114,7 @@ export default function CreateListing() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // if(formData.imagesUrls.length < 1) return setError('You must upload at least one image')
+            if(formData.imageUrls.length < 1) return setError('You must upload at least one image')
             if(+formData.regularPrice < +formData.discountPrice) return setError('Discount price must be lower than regular price');
             setLoading(true);
             setError(false); //removes previous errors.
@@ -207,7 +209,7 @@ export default function CreateListing() {
                 </div>
             </div>
             <div className="flex flex-col flex-1 gap-4">
-                {/* <p className="font-semibold">Images:
+                <p className="font-semibold">Images:
                     <span className='font-normal text-gray-600 ml-2'>The first image will be the cover (max 6)</span>
                 </p>
                 <div className="flex gap-4">
@@ -217,7 +219,7 @@ export default function CreateListing() {
                 </div>
                 <p className='text-red-700 text-sm'>{imageUploadError && imageUploadError}</p>
                 {
-                    formData.imagesUrls.length > 0 && formData.imagesUrls.map((url,index) => (
+                    formData.imageUrls.length > 0 && formData.imageUrls.map((url,index) => (
                         <div key={url} className=" flex justify-betweenp-3 border items-center">
                             <img src={url} alt="listing image" className='w-20 h-20 object-contain rounded-lg' />
                             <button type='button' onClick={() => handleRemoveImage(index)} className="p-3 text-red-700 rounded-lg uppercase hover:opacity-75 disabled:opacity-80">Delete</button>
@@ -225,7 +227,7 @@ export default function CreateListing() {
                         </div>
 
                     ))
-                } */}
+                }
 
                 <button disabled={loading || uploading} className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading ? 'Creating...' : 'Create listing' }</button>
                 {error && <p className='text-red-700 text-sm'>{error}</p>}

@@ -24,40 +24,39 @@ export default function Profile() {
   
 
   //firebase storage
-  //allow read;
-  // allow write: if
-  // request.resource.size < 2 * 1024 * 1024 &&
+  // allow read;
+  // allow write: if 
+  // request.resource.size < 2 * 1024 * 1024 && 
   // request.resource.contentType.matches('image/.*')
+  useEffect(() => {
+    if(file) {
+      handleFileUpload(file);
+    }
+  },[file]);
 
-  // useEffect(() => {
-  //   if(file) {
-  //     handleFileUpload(file);
-  //   }
-  // },[file]);
+  const handleFileUpload = (file) => {
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + file.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, file);
 
-//   const handleFileUpload = (file) => {
-//     const storage = getStorage(app);
-//     const fileName = new Date().getTime() + file.name;
-//     const storageRef = ref(storage, fileName);
-//     const uploadTask = uploadBytesResumable(storageRef, file);
-
-//     uploadTask.on('state_changed',
-//       (snapshot) => {
-//         const progress = (snapshot.bytesTransferred /
-//           snapshot.totalBytes) * 100;
-//           setFilePerc(Math.round(progress));
-//     },
-//     (error) => {
-//       setFileUploadError(true);
-//     },
-//     ()=>{
-//       getDownloadURL(uploadTask.snapshot.ref).then
-//       ((downloadURL) => 
-//         setFormData({...formData,avatar: downloadURL})
-//       );
-//     }
-//   );
-// };
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred /
+          snapshot.totalBytes) * 100;
+          setFilePerc(Math.round(progress));
+    },
+    (error) => {
+      setFileUploadError(true);
+    },
+    ()=>{
+      getDownloadURL(uploadTask.snapshot.ref).then
+      ((downloadURL) => 
+        setFormData({...formData,avatar: downloadURL})
+      );
+    }
+  );
+};
    
    const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value});
@@ -233,9 +232,9 @@ export default function Profile() {
           {userListings.map((listing) => (
             <div key={listing._id} className='border rounded-lg p-3 flex justify-between items-center gap-4'>
 
-            {/* <Link to={`/listing/${listing._id}`}> 
+            <Link to={`/listing/${listing._id}`}> 
               <img src={listing.imageUrls[0]} alt="listing cover" className='h-16 w-16 object-contain'/>
-            </Link> */}
+            </Link>
 
             <Link className='text-slate-700 font-semibold hover:underline truncate flex-1' to={`/listing/${listing._id}`} > 
               <p>{listing.name}</p>
